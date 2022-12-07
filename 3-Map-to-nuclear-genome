@@ -1,0 +1,7 @@
+#Index the reference genome
+samtools faidx nuclear.fa
+bwa index nuclear.fa
+
+bwa mem -t $NSLOTS nuclear.fa forward_N.fq reverse_N.fq > N_aln.sam
+
+samtools view -bSh N_aln.sam | samtools sort - N_sort.bam -@ $NSLOTS

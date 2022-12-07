@@ -1,0 +1,15 @@
+#file name - sortSNPdata.sh
+#run twice, first line first then second with # in front of one not being run
+
+#!/bin/bash
+
+#SBATCH --partition=medium
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=8G
+#SBATCH --job-name="sortSNPdata"
+
+BASDIR="/mnt/shared/scratch/csmith/data/merged"
+
+sort -k1 $BASDIR/finalSNPdata.txt > $BASDIR/sortedSNPdata.txt
+
+angsd sites index $BASDIR/sortedSNPdata.txt

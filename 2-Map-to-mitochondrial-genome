@@ -1,0 +1,8 @@
+bwa mem -t $NSLOTS mito_ref.fa output_forward_paired.fq.gz 
+output_reverse_paired.fq.gz > mt_aln.sam
+
+view -bSh mt_aln.sam | samtools sort – mt_aln_sort.bam
+
+samtools view -f4 –bh mt_aln_sort.bam > unmapped.bam -@ $NSLOTS
+
+$java -Xmx16g -jar $PICARDJARFILE SamToFastq I=unmapped.bam F=forward_N.fq F2=reverse_N.fq

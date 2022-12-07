@@ -1,0 +1,8 @@
+java -jar $PICARDCLASSPATH/picard.jar MarkDuplicates REMOVE_DUPLICATES=true \      
+I=N_sort0_RG.bam \     
+I=N_sort1_RG.bam \      
+I=N_sort2_RG.bam \     
+I=N_sort3_RG.bam \     
+I=N_sort4_RG.bam \      
+I=N_sort5_RG.bam \
+OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \ O=N_dedup.bam \ M=marked_dup_metrics.txt

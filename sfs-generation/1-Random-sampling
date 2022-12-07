@@ -1,0 +1,7 @@
+#file name - SNPsampling.R
+
+LD_pruned_SNPs <- read.table("/mnt/shared/scratch/csmith/data/SNP_random_sampling/D_unlinked_weight006.id", sep=":")
+
+Random_sample <- LD_pruned_SNPs[sample(1:nrow(LD_pruned_SNPs), 75000),]
+
+write.table(Random_sample, "/mnt/shared/scratch/csmith/data/SNP_random_sampling/75000SNPs_sample.txt", sep = ":", row.names=FALSE)

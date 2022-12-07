@@ -1,0 +1,11 @@
+#file name - SNPsampling.sh
+#!/bin/bash
+
+#SBATCH --partition=long
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=4G
+#SBATCH --job-name="SNPRandomSampling"
+
+module purge
+
+Rscript /mnt/shared/scratch/csmith/data/SNP_random_sampling/SNPsampling.R

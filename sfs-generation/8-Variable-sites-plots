@@ -1,0 +1,13 @@
+figure <- par(mfrow=c(2, 2))
+
+barplot((sfsneac[-c(1,length(sfsneac))]), xlab = "Copies of the derived alleles", ylab = "Number of Sites", names.arg = 1:(length(sfsneacplot)), cex.axis = 0.7, ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc Variable Sites", line = -0.7, cex.main = 1.5)
+
+barplot((sfsneap[-c(1,length(sfsneap))]), xlab = "Copies of the derived alleles", ylab = "Number of Sites", names.arg = 1:(length(sfsneapplot)), cex.axis = 0.7, ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp Variable Sites", line = -0.7, cex.main = 1.5)
+
+barplot((sfsnwac[-c(1,length(sfsnwac))]), xlab = "Copies of the derived alleles", ylab = "Number of Sites", names.arg = 1:(length(sfsnwacplot)), cex.axis = 0.7, ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc Variable Sites", line = -0.7, cex.main = 1.5)
+
+barplot((sfsNWAp[-c(1,length(sfsnwap))]), xlab = "Copies of the derived alleles", ylab = "Number of Sites", names.arg = 1:(length(sfsnwapplot)), cex.axis = 0.7, ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp Variable Sites", line = -0.7, cex.main = 1.5)

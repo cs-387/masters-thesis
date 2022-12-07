@@ -1,0 +1,12 @@
+#file name - ANGSDneacsfs.sh
+
+#!/bin/bash
+
+#SBATCH --partition=medium
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=128G
+#SBATCH --job-name="SFSneac"
+
+BASDIR="/mnt/shared/scratch/csmith/data/merged"
+
+realSFS $BASDIR/angsdputneac.saf.idx -nSites 75000 -sites $BASDIR/sortedSNPdata2.txt > $BASDIR/neac.sfs

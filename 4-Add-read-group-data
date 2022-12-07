@@ -1,0 +1,8 @@
+#RGID=Read group ID that needs to include the name of the samples and the name of the lane 
+#RGLB=library name
+#RGPL=illumina
+#RGSM=sample NAME
+#RGPU={FLOWCELL_BARCODE}.{LANE}.{SAMPLE_BARCODE} 
+
+java -Xmx64G -jar $PICARDJARFILE AddOrReplaceReadGroups INPUT= 
+N_sort.bam OUTPUT= N_sort_RG.bam SORT_ORDER=coordinate RGID=FCHVMHNCCXX_L0 RGLB=wHAXPI030603-63 RGPL=ILLUMINA RGSM=IR23 RGPU=FCHVMHNCCXX_L0_IR23 CREATE_INDEX=true

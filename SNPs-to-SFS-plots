@@ -1,4 +1,4 @@
-#Master Data Processing R Script
+#Master Data Visualisation R Script
 
 #R - Filter for HWE deviations in R (p.value < 0.001 & F < 0)
 #Checking to see if there are any SNPs with strong p-values and negative f-values in all populations

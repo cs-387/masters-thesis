@@ -1,0 +1,1 @@
+samtools view -bh -F4 -q 30 N_U_al.bam > N_q30.bam 

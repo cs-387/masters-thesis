@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#SBATCH --partition=long
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --job-name="coverage"
+
+BASDIR="/mnt/shared/scratch/csmith/data/merged"
+
+angsd -bam $BASDIR/file.list -doDepth 1 -out $BASDIR/coverageTt -doCounts 1 -nInd 37 -minMapQ 30 -minQ 30 -nThreads 9 -maxDepth 3000

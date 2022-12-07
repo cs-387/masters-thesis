@@ -1,0 +1,9 @@
+sfsallsites <-(scan(file.choose(new=FALSE)))
+
+figure <- par(mfrow=c(1, 1))
+
+sfsallsitesplot<-norm(sfsallsites[-c(1,length(sfsallsites))])
+
+barplot((sfsallsitesplot), xlab = "Copies of the derived alleles", ylab = "Proportion", names.arg = 1:(length(sfsallsitesplot)), cex.axis = 0.8, ylim = c(0,0.2), space = 0.2, cex.names = 0.4, axisnames = TRUE, col='#93ccea')
+
+title("All Sites", line = -1, cex.main = 2)

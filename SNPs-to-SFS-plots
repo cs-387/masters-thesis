@@ -1,0 +1,219 @@
+#Master Data Processing R Script
+
+#R - Filter for HWE deviations in R (p.value < 0.001 & F < 0)
+#Checking to see if there are any SNPs with strong p-values and negative f-values in all populations
+#Generate a table in R with the 75,000 SNPs with respective p and f-values
+#See if there are any SNPs with very strong HWE deviations
+
+setwd("C:/Users/cassi/Documents/ANGSD/")
+
+SNPdata1mil<-read.table("1milSNPs_sample.txt", sep=":")
+
+#to count number of SNPs in the random sample
+nrow(SNPdata)
+
+colnames(SNPdata1mil) <- c("Chromo", "Position")
+
+#do not have to run with changed SNP values
+#setwd("D:/Data Processing/")
+#nwapF <- read.table("Tt_mapped_chrm_cov_auto37_NWAp_HWE2.hwe", sep='\t', header=TRUE)
+#nwacF <- read.table("Tt_mapped_chrm_cov_auto37_NWAc_HWE2.hwe", sep='\t', header=TRUE)
+#neapF <- read.table("Tt_mapped_chrm_cov_auto37_NEAp_HWE2.hwe", sep='\t', header=TRUE)
+#neacF <- read.table("Tt_mapped_chrm_cov_auto37_NEAc_HWE2.hwe", sep='\t', header=TRUE)
+
+alldataneac1mil <- merge(SNPdata1mil, neacF, by=c("Chromo", "Position"))
+alldataneap1mil <- merge(SNPdata1mil, neapF, by=c("Chromo", "Position"))
+alldatanwap1mil <- merge(SNPdata1mil, nwapF, by=c("Chromo", "Position"))
+alldatanwac1mil <- merge(SNPdata1mil, nwacF, by=c("Chromo", "Position"))
+
+alldata1mil <- Reduce(function(x,y) merge(x, y, all=TRUE), 
+                  list(alldataneac1mil, alldataneap1mil, alldatanwac1mil, alldatanwap1mil))
+
+library(dplyr)
+
+alldatanodups1mil <- distinct(alldata1mil, Chromo, Position, .keep_all=TRUE)
+
+pffiltered1mil <- filter(alldatanodups1mil, p.value < 0.001 & F < 0)
+
+#to take these values (out of HWE) out of the total data set
+filteredSNPdata1mil <- anti_join(alldatanodups1mil, pffiltered1mil)
+
+#to remove unecessary columns, set to NULL
+filteredSNPdata1mil$Major <- NULL
+filteredSNPdata1mil$Minor <- NULL
+filteredSNPdata1mil$hweFreq <- NULL
+filteredSNPdata1mil$Freq <- NULL
+filteredSNPdata1mil$F <- NULL
+filteredSNPdata1mil$LRT <- NULL
+filteredSNPdata1mil$p.value <- NULL
+
+#switch placement of Position and Chromo columns
+filteredSNPdata1mil <- filteredSNPdata1mil[, c("Chromo", "Position")]
+
+#remove x rows until there is 75000 exactly
+finalSNPdata1mil <- filteredSNPdata1mil[- (1:1844), ] 
+
+#save filtered SNP data as file
+write.table(finalSNPdata1mil, file = "finalSNPdata1mil.txt", row.names = FALSE, 
+            col.names = FALSE, quote = FALSE)
+
+#-----------Move to cluster for next steps----------
+
+#----------SFS Plots from ANGSD Output (R)----------
+#plotting the sfs (without 0 frequency) using the barplot function
+#read data into R (.sfs files from cluster)
+sfsneac75 <-(scan(file.choose(new=FALSE)))
+sfsneap75 <-(scan(file.choose(new=FALSE)))
+sfsnwac75 <-(scan(file.choose(new=FALSE)))
+sfsnwap75 <-(scan(file.choose(new=FALSE)))
+
+#connect data to numeric vector to run as matrix
+popnum <- c(1:21)
+nwacnum <- c(1:15)
+#? sfsneacdata <- rbind(popnum, sfsneac)
+
+#normalise data
+#sfsneacplot<-norm(sfsneac[-c(1,length(sfsneac))])
+#sfsneapplot<-norm(sfsneap[-c(1,length(sfsneap))]) 
+#sfsnwacplot<-norm(sfsnwac[-c(1,length(sfsnwac))]) 
+#sfsnwapplot<-norm(sfsnwap[-c(1,length(sfsnwap))]) 
+
+sfsneacplot50<-(sfsneac50/(sum(sfsneac50)))
+sfsneapplot50<-(sfsneap50/(sum(sfsneap50)))
+sfsnwacplot50<-(sfsnwac50/(sum(sfsnwac50)))
+sfsnwapplot50<-(sfsnwap50/(sum(sfsnwap50)))
+
+sfsneacplot75<-(sfsneac75/(sum(sfsneac75)))
+sfsneapplot75<-(sfsneap75/(sum(sfsneap75)))
+sfsnwacplot75<-(sfsnwac75/(sum(sfsnwac75)))
+sfsnwapplot75<-(sfsnwap75/(sum(sfsnwap75)))
+
+sfsneacplot100<-(sfsneac100/(sum(sfsneac100)))
+sfsneapplot100<-(sfsneap100/(sum(sfsneap100)))
+sfsnwacplot100<-(sfsnwac100/(sum(sfsnwac100)))
+sfsnwapplot100<-(sfsnwap100/(sum(sfsnwap100)))
+
+sfsneacplot1mil<-(sfsneac1mil/(sum(sfsneac1mil)))
+sfsneapplot1mil<-(sfsneap1mil/(sum(sfsneap1mil)))
+sfsnwacplot1mil<-(sfsnwac1mil/(sum(sfsnwac1mil)))
+sfsnwapplot1mil<-(sfsnwap1mil/(sum(sfsnwap1mil)))
+
+#put data into a 2x2 figure of the four populations' barplots
+figure <- par(mfrow=c(2, 2))
+barplot((sfsneacplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneacplot)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc", line = -1, cex.main = 2)
+barplot((sfsneapplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneapplot)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp", line = -1, cex.main = 2)
+barplot((sfsnwacplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwacplot)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc", line = -1, cex.main = 2)
+barplot((sfsnwapplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwapplot)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp", line = -1, cex.main = 2)
+
+#One big plot for 50, 75, 100, and 1 mil SNPs comparison
+figure <- par(mfrow=c(4, 4))
+par(mar=c(5, 4, 4, 2) + 0.1)
+#50
+barplot((sfsneacplot50), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneacplot50)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc 50,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsneapplot50), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneapplot50)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp 50,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwacplot50), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwacplot50)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc 50,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwapplot50), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwapplot50)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp 50,000 SNPs", line = -1, cex.main = 1.5)
+#75
+barplot((sfsneacplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 0:((length(sfsneacplot75))-1), cex.axis = 0.8, ylim = c(0,0.7), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc 75,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsneapplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 0:((length(sfsneacplot75))-1), cex.axis = 0.8, ylim = c(0,0.7), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp 75,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwacplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 0:((length(nwacnum))-1), cex.axis = 0.8, ylim = c(0,0.7), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc 75,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwapplot75), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 0:((length(sfsneacplot75))-1), cex.axis = 0.8, ylim = c(0,0.7), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp 75,000 SNPs", line = -1, cex.main = 1.5)
+#100
+barplot((sfsneacplot100), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneacplot100)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc 100,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsneapplot100), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneapplot100)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp 100,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwacplot100), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwacplot100)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc 100,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwapplot100), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwapplot100)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp 100,000 SNPs", line = -1, cex.main = 1.5)
+#1mil
+barplot((sfsneacplot1mil), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneacplot1mil)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc 1,000,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsneapplot1mil), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsneapplot1mil)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp 1,000,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwacplot1mil), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwacplot1mil)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc 1,000,000 SNPs", line = -1, cex.main = 1.5)
+barplot((sfsnwapplot1mil), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsnwapplot1mil)), cex.axis = 0.8, ylim = c(0,0.4), 
+        space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp 1,000,000 SNPs", line = -1, cex.main = 1.5)
+
+#----------Variable Sites Plots from ANGSD Output (R)----------
+figure <- par(mfrow=c(2, 2))
+barplot((sfsneac[-c(1,length(sfsneac))]), xlab = "Copies of the derived alleles", 
+        ylab = "Number of Sites", names.arg = 1:(length(sfsneacplot)), cex.axis = 0.7, 
+        ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc Variable Sites", line = -0.7, cex.main = 1.5)
+barplot((sfsneap[-c(1,length(sfsneap))]), xlab = "Copies of the derived alleles", 
+        ylab = "Number of Sites", names.arg = 1:(length(sfsneapplot)), cex.axis = 0.7, 
+        ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp Variable Sites", line = -0.7, cex.main = 1.5)
+barplot((sfsnwac[-c(1,length(sfsnwac))]), xlab = "Copies of the derived alleles", 
+        ylab = "Number of Sites", names.arg = 1:(length(sfsnwacplot)), cex.axis = 0.7, 
+        ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc Variable Sites", line = -0.7, cex.main = 1.5)
+barplot((sfsnwap[-c(1,length(sfsnwap))]), xlab = "Copies of the derived alleles", 
+        ylab = "Number of Sites", names.arg = 1:(length(sfsnwapplot)), cex.axis = 0.7, 
+        ylim = c(0,6000), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp Variable Sites", line = -0.7, cex.main = 1.5)
+
+#----------SFS Plot for all SNPs from ANGSD Output (R)----------
+#? (for supplementary material?)
+sfsallsites <-(scan(file.choose(new=FALSE)))
+figure <- par(mfrow=c(1, 1))
+sfsallsitesplot<-norm(sfsallsites[-c(1,length(sfsallsites))]) 
+barplot((sfsallsitesplot), xlab = "Copies of the derived alleles", ylab = "Proportion",
+        names.arg = 1:(length(sfsallsitesplot)), cex.axis = 0.8, ylim = c(0,0.2), 
+        space = 0.2, cex.names = 0.4, axisnames = TRUE, col='#93ccea')
+title("All Sites", line = -1, cex.main = 2)

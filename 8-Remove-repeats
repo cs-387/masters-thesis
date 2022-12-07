@@ -1,0 +1,1 @@
+intersectBed -abam N_q30.bam -b RepeatMask.bed -v | samtools view -h - | samtools view -bSh - > N_noRepeats.bam

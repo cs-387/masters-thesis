@@ -1,0 +1,15 @@
+java -jar trimmomatic-0.35.jar PE -phred33 input_forward.fq.gz
+
+input_reverse.fq.gz output_forward_paired .fq.gz
+
+output_forward_unpaired.fq.gz output_reverse_paired.fq.gz
+
+#Adapter.fa:2:30:10 with:
+#2 = number of mistmaches allowed
+#30 and 10 = parameters to define the accuracy of the match
+output_reverse_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10
+
+#Sliding-window: 4:15: trimming when the average quality over 4 bases falls below a threshold of 15 
+#Leading and trailing: 5 – historically Illumina created reads with one or 2 N-base-calls at the start and a set of trailing B phred quality score at the end. N’s are treated as quality 0 and #B’s as 2 so by trimming both ends for 5 these artefacts are #removed
+#Minimum read length: 75
+LEADING:5 TRAILING:5 SLIDINGWINDOW:4:15 MINLEN:75

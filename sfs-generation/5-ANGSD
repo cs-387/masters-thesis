@@ -1,0 +1,12 @@
+#file name - ANGSDneac.sh
+
+#!/bin/bash
+
+#SBATCH --partition=long
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=4G
+#SBATCH --job-name="SFSrandomsample"
+
+BASDIR="/mnt/shared/scratch/csmith/data/merged"
+
+angsd -bam $BASDIR/neac.list -gl 1 -anc $BASDIR/ancestral_state_chrm_MQ20.fa -dosaf 1 -P 4 -minMapQ 30 -minQ 30 -out angsdputneac

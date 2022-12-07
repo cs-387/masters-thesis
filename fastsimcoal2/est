@@ -1,0 +1,32 @@
+// Search ranges and rules file
+// ****************************
+
+[PARAMETERS]
+// #isInt? #name #search #min #max
+// all Ns are in number of haploid individuals
+1 NPOP0 unif 10 1e5 output
+1 NPOP1 unif 10 1e5 output
+1 NPOP2 unif 10 1e5 output
+1 NPOP3 unif 10 1e5 output
+1 TMIG_STOP unif 50 6000 output bounded
+1 TDIV_POP01 unif 50 6000 output bounded
+1 TDIV_POP02 unif 50 6000 output bounded
+1 TDIV_POP13 unif 50 6000 output bounded
+1 TDIV_POP20 unif 50 6000 output bounded
+1 TDIV_POP21 unif 50 6000 output bounded
+1 TDIV_POP23 unif 50 6000 output bounded
+0 migr01 unif 0.0100 0.0500 output
+0 migr02 unif 0.0100 0.0500 output
+0 migr03 unif 0.0100 0.0500 output
+0 migr10 unif 0.0100 0.0500 output
+0 migr12 unif 0.0100 0.0500 output
+0 migr13 unif 0.0100 0.0500 output
+0 migr20 unif 0.0100 0.0500 output
+0 migr21 unif 0.0100 0.0500 output
+0 migr23 unif 0.0100 0.0500 output
+0 migr30 unif 0.0100 0.0500 output
+0 migr31 unif 0.0100 0.0500 output
+0 migr32 unif 0.0100 0.0500 output
+
+[COMPLEX PARAMETERS]
+// lists complex parameters that are obtained as simple operations between any two, simple or complex parameters or between a parameter and a scalar

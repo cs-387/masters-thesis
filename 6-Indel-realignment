@@ -1,0 +1,6 @@
+samtools index N_dedup.bam N_dedup.bai
+# Create target intervals list using RealignerTargetCreator
+java -jar $GATKCLASSPATH/GenomeAnalysisTK.jar -T RealignerTargetCreator –R nuclear.fa -I N_dedup.bam -o N_realignertargetcreator.intervals 
+
+# Realign reads using IndelRealigner
+java -Xmx8G -Djava.io.tmpdir=/tmp -jar $GATKCLASSPATH/GenomeAnalysisTK.jar -T IndelRealigner -R nuclear.fa -targetIntervals N_realignertargetcreator.intervals -I N_dedup.bam -o N_dedup_U_al.bam

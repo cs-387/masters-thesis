@@ -1,0 +1,61 @@
+#R - Filter for HWE deviations in R (p.value < 0.001 & F < 0)
+#Checking to see if there are any SNPs with strong p-values and negative f-values in all populations
+#Generate a table in R with the 75,000 SNPs with respective p and f-values
+#See if there are any SNPs with very strong HWE deviations
+
+setwd("C:/Users/cassi/Documents/ANGSD/")
+
+SNPdata<-read.table("75000SNPs_sample.txt", sep=":")
+
+#to count number of SNPs in the random sample
+nrow(SNPdata)
+
+colnames(SNPdata) <- c("Chromo", "Position")
+
+setwd("D:/Data Processing/")
+
+#this next step takes several minutes for each line
+
+nwapF <- read.table("Tt_mapped_chrm_cov_auto37_NWAp_HWE2.hwe", sep='\t', header=TRUE)
+nwacF <- read.table("Tt_mapped_chrm_cov_auto37_NWAc_HWE2.hwe", sep='\t', header=TRUE)
+neapF <- read.table("Tt_mapped_chrm_cov_auto37_NEAp_HWE2.hwe", sep='\t', header=TRUE)
+neacF <- read.table("Tt_mapped_chrm_cov_auto37_NEAc_HWE2.hwe", sep='\t', header=TRUE)
+
+alldataneac <- merge(SNPdata, neacF, by=c("Chromo", "Position"))
+alldataneap <- merge(SNPdata, neapF, by=c("Chromo", "Position"))
+alldatanwap <- merge(SNPdata, nwapF, by=c("Chromo", "Position"))
+alldatanwac <- merge(SNPdata, nwacF, by=c("Chromo", "Position"))
+
+alldata <- Reduce(function(x,y) merge(x, y, all=TRUE), list(alldataneac, alldataneap, alldatanwac, alldatanwap))
+
+library(dplyr)
+
+alldatanodups <- distinct(alldata, Chromo, Position, .keep_all=TRUE)
+
+pffiltered <- filter(alldatanodups, p.value < 0.001 & F < 0)
+
+#to take these values (out of HWE) out of the total data set
+
+filteredSNPdata <- anti_join(alldatanodups, pffiltered)
+
+#to remove unnecessary columns, set to NULL
+
+filteredSNPdata$Major <- NULL
+filteredSNPdata$Minor <- NULL
+filteredSNPdata$hweFreq <- NULL
+filteredSNPdata$Freq <- NULL
+filteredSNPdata$F <- NULL
+filteredSNPdata$LRT <- NULL
+filteredSNPdata$p.value <- NULL
+
+#switch placement of Position and Chromo columns
+
+filteredSNPdata <- filteredSNPdata[, c("Chromo", "Position")]
+
+#remove x rows until there is 75000 exactly
+
+finalSNPdata <- filteredSNPdata[- x, ]
+
+#save filtered SNP data as file
+
+write.table(finalSNPdata, file = "finalSNPdata.txt", row.names = FALSE, col.names = FALSE, quote = FALSE)

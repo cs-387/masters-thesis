@@ -1,0 +1,30 @@
+#plotting the sfs (without 0 frequency) using the barplot function
+
+#read data into R (.sfs files from cluster)
+
+sfsneac <-(scan(file.choose(new=FALSE)))
+sfsneap <-(scan(file.choose(new=FALSE)))
+sfsnwac <-(scan(file.choose(new=FALSE)))
+sfsnwap <-(scan(file.choose(new=FALSE)))
+
+#normalise data
+
+sfsneacplot<-norm(sfsneac[-c(1,length(sfsneac))])
+sfsneapplot<-norm(sfsneap[-c(1,length(sfsneap))])
+sfsnwacplot<-norm(sfsnwac[-c(1,length(sfsnwac))])
+sfsnwapplot<-norm(sfsnwap[-c(1,length(sfsnwap))])
+
+#put data into a 2x2 figure of the four populations' barplots
+
+figure <- par(mfrow=c(2, 2))
+
+barplot((sfsneacplot), xlab = "Copies of the derived alleles", ylab = "Proportion", names.arg = 1:(length(sfsneacplot)), cex.axis = 0.8, ylim = c(0,0.4), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#e8805a')
+title("NEAc", line = -1, cex.main = 2)
+
+barplot((sfsneapplot), xlab = "Copies of the derived alleles", ylab = "Proportion", names.arg = 1:(length(sfsneapplot)), cex.axis = 0.8, ylim = c(0,0.4), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#93ccea')
+title("NEAp", line = -1, cex.main = 2)
+
+barplot((sfsnwacplot), xlab = "Copies of the derived alleles", ylab = "Proportion", names.arg = 1:(length(sfsnwacplot)), cex.axis = 0.8, ylim = c(0,0.4), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#a94520')
+title("NWAc", line = -1, cex.main = 2)
+barplot((sfsnwapplot), xlab = "Copies of the derived alleles", ylab = "Proportion", names.arg = 1:(length(sfsnwapplot)), cex.axis = 0.8, ylim = c(0,0.4), space = 0.2, cex.names = 0.7, axisnames = TRUE, col='#2b7dac')
+title("NWAp", line = -1, cex.main = 2)

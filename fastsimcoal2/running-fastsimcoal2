@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#SBATCH --partition=medium
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=64G
+#SBATCH --job-name="scenarioD"
+
+for i in {1..10}
+do
+    mkdir run$i
+    BASDIR="/mnt/shared/scratch/csmith/fsc27_linux64/ScenarioA/run$i/"
+    scp /mnt/shared/scratch/csmith/fsc27_linux64/fscscenarios.est /mnt/shared/scratch/csmith/fsc_linux64/ScenarioA/run$i/
+    scp /mnt/shared/scratch/csmith/fsc27_linux64/
+    cd /mnt/shared/scratch/csmith/fsc_linux64/ScenarioA/run$i/
+    fsc2702 -t $BASDIR/scenarioD.tpl -n 20000 -e $BASDIR/fscscenarios.est -E 10 -x -I -B 0 -c 0 -d -M -s 75000
+    cd ..
+done
